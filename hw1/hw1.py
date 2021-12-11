@@ -369,13 +369,20 @@ q3_3daccuricy64/=200
 q3_3daccuricy32/=200
 q3_3daccuricy16/=200
 
-
+print("Per channel accuricies without grids:")
+print("Query_1 with 128, 64, 32, 16, 8 quantization respectively:")
 print(q1accuricy128,q1accuricy64,q1accuricy32,q1accuricy16,q1accuricy8)
+print("Query_2 with 128, 64, 32, 16, 8 quantization respectively:")
 print(q2accuricy128,q2accuricy64,q2accuricy32,q2accuricy16,q2accuricy8)
+print("Query_3 with 128, 64, 32, 16, 8 quantization respectively:")
 print(q3accuricy128,q3accuricy64,q3accuricy32,q3accuricy16,q3accuricy8)
 
+print("3D accuricies without grid:")
+print("Query_1 with 128, 64, 32, 16 quantization respectively:")
 print(q1_3daccuricy128,q1_3daccuricy64,q1_3daccuricy32,q1_3daccuricy16)
+print("Query_2 with 128, 64, 32, 16 quantization respectively:")
 print(q2_3daccuricy128,q2_3daccuricy64,q2_3daccuricy32,q2_3daccuricy16)
+print("Query_3 with 128, 64, 32, 16 quantization respectively:")
 print(q3_3daccuricy128,q3_3daccuricy64,q3_3daccuricy32,q3_3daccuricy16)
 
 
@@ -463,7 +470,9 @@ q13Dacc48/=200
 q23Dacc48/=200
 q33Dacc48/=200        
 
+print("Per channel accuricies of query_1, query_2, query_3 with 48x48 grid:")
 print(q1acc48, q2acc48, q3acc48)
+print("3D accuricies of query_1, query_2, query_3 with 48x48 grid:")
 print(q13Dacc48, q23Dacc48, q33Dacc48)        
 
 
@@ -551,7 +560,9 @@ q13Dacc24/=200
 q23Dacc24/=200
 q33Dacc24/=200        
 
+print("Per channel accuricies of query_1, query_2, query_3 with 24x24 grid:")
 print(q1acc24, q2acc24, q3acc24)
+print("3D accuricies of query_1, query_2, query_3 with 24x24 grid:")
 print(q13Dacc24, q23Dacc24, q33Dacc24)
 
 
@@ -639,7 +650,9 @@ q13Dacc16/=200
 q23Dacc16/=200
 q33Dacc16/=200        
 
+print("Per channel accuricies of query_1, query_2, query_3 with 16x16 grid:")
 print(q1acc16, q2acc16, q3acc16)
+print("3D accuricies of query_1, query_2, query_3 with 16x16 grid:")
 print(q13Dacc16, q23Dacc16, q33Dacc16)
 
 
@@ -727,5 +740,7 @@ q13Dacc12/=200
 q23Dacc12/=200
 q33Dacc12/=200        
 
+print("Per channel accuricies of query_1, query_2, query_3 with 12x12 grid:")
 print(q1acc12, q2acc12, q3acc12)
+print("3D accuricies of query_1, query_2, query_3 with 12x12 grid:")
 print(q13Dacc12, q23Dacc12, q33Dacc12)
