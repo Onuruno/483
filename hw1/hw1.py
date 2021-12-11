@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
-import time
-epsilon = 0.0000001
+
+epsilon = 0.0001
 
 def get3dHistograms(rgb3d):
     histogram2 = np.zeros([200,2,2,2], dtype=int)
@@ -177,7 +177,16 @@ def compareImage(sourceR, sourceG, sourceB, imR, imG, imB):
     return np.argmin(klDivs)
 
 def compareGrid3dImage(source3d, im3d, gridSize):
-    return
+    pixelPerGrid = gridSize*gridSize
+    
+    prob3dS = source3d/pixelPerGrid
+    prob3dS[prob3dS==0] = epsilon
+    
+    prob3dQ = im3d/pixelPerGrid
+    prob3dQ[prob3dQ==0] = epsilon
+    
+    klDivs = np.sum(np.sum(np.sum(np.sum(prob3dQ*np.log(prob3dQ/prob3dS), axis=2), axis=2), axis=2), axis=1)
+    return np.argmin(klDivs)
 
 def compareGridImage(sourceR, sourceG, sourceB, imR, imG, imB, gridSize):
     pixelPerGrid = gridSize*gridSize
@@ -205,11 +214,10 @@ def compareGridImage(sourceR, sourceG, sourceB, imR, imG, imB, gridSize):
             + np.sum(np.sum(probBlueQ*np.log(probBlueQ/probBlueS), axis=2), axis=1))/3
     return np.argmin(klDivs)   
 
-t1 = time.time()
 fileNames = []
 with open("InstanceNames.txt") as file:
     fileNames = (file.read().splitlines())
-'''
+
 ####################################################### SINGLE GRID #######################################
 rgbRed = []
 rgbBlue = []
@@ -369,7 +377,8 @@ print(q3accuricy128,q3accuricy64,q3accuricy32,q3accuricy16,q3accuricy8)
 print(q1_3daccuricy128,q1_3daccuricy64,q1_3daccuricy32,q1_3daccuricy16)
 print(q2_3daccuricy128,q2_3daccuricy64,q2_3daccuricy32,q2_3daccuricy16)
 print(q3_3daccuricy128,q3_3daccuricy64,q3_3daccuricy32,q3_3daccuricy16)
-'''
+
+
 ##################################### 48x48 GRID ####################################
 rgbRed48 = []
 rgbGreen48 = []
@@ -409,7 +418,7 @@ rgb3d48 = np.array(rgb3d48)
 GridHistogram48Red = getGridHistograms(rgbRed48, 48, 8)
 GridHistogram48Green = getGridHistograms(rgbGreen48, 48, 8)
 GridHistogram48Blue = getGridHistograms(rgbBlue48, 48, 8)
-GridHistogram3D48 = get3dGridHistograms(rgb3d48, 48, 4)
+GridHistogram3D48 = get3dGridHistograms(rgb3d48, 48, 16)
 
 q1acc48=q2acc48=q3acc48=0
 q13Dacc48=q23Dacc48=q33Dacc48=0
@@ -420,7 +429,7 @@ for i in range(200):
     h48r = getGridHistogram(rgbR, 48, 8)
     h48g = getGridHistogram(rgbG, 48, 8)
     h48b = getGridHistogram(rgbB, 48, 8)
-    h48 = get3dGridHistogram(rgb3D, 48, 4)
+    h48 = get3dGridHistogram(rgb3D, 48, 16)
     if(i == compareGridImage(GridHistogram48Red, GridHistogram48Green, GridHistogram48Blue, h48r, h48g, h48b, 48)):
         q1acc48+=1
     if(i == compareGrid3dImage(GridHistogram3D48, h48, 48)):
@@ -431,7 +440,7 @@ for i in range(200):
     h48r = getGridHistogram(rgbR, 48, 8)
     h48g = getGridHistogram(rgbG, 48, 8)
     h48b = getGridHistogram(rgbB, 48, 8)
-    h48 = get3dGridHistogram(rgb3D, 48, 4)
+    h48 = get3dGridHistogram(rgb3D, 48, 16)
     if(i == compareGridImage(GridHistogram48Red, GridHistogram48Green, GridHistogram48Blue, h48r, h48g, h48b, 48)):
         q2acc48+=1
     if(i == compareGrid3dImage(GridHistogram3D48, h48, 48)):
@@ -442,7 +451,7 @@ for i in range(200):
     h48r = getGridHistogram(rgbR, 48, 8)
     h48g = getGridHistogram(rgbG, 48, 8)
     h48b = getGridHistogram(rgbB, 48, 8)
-    h48 = get3dGridHistogram(rgb3D, 48, 4)
+    h48 = get3dGridHistogram(rgb3D, 48, 16)
     if(i == compareGridImage(GridHistogram48Red, GridHistogram48Green, GridHistogram48Blue, h48r, h48g, h48b, 48)):
         q3acc48+=1
     if(i == compareGrid3dImage(GridHistogram3D48, h48, 48)):
@@ -454,9 +463,10 @@ q13Dacc48/=200
 q23Dacc48/=200
 q33Dacc48/=200        
 
-print(q1acc48, q2acc48, q3acc48)        
+print(q1acc48, q2acc48, q3acc48)
+print(q13Dacc48, q23Dacc48, q33Dacc48)        
 
-'''
+
 ##################################### 24x24 GRID ####################################
 rgbRed24 = []
 rgbGreen24 = []
@@ -492,6 +502,58 @@ rgbRed24 = np.array(rgbRed24)
 rgbGreen24 = np.array(rgbGreen24)
 rgbBlue24 = np.array(rgbBlue24)
 rgb3d24 = np.array(rgb3d24)
+
+GridHistogram24Red = getGridHistograms(rgbRed24, 24, 8)
+GridHistogram24Green = getGridHistograms(rgbGreen24, 24, 8)
+GridHistogram24Blue = getGridHistograms(rgbBlue24, 24, 8)
+GridHistogram3D24 = get3dGridHistograms(rgb3d24, 24, 16)
+
+q1acc24=q2acc24=q3acc24=0
+q13Dacc24=q23Dacc24=q33Dacc24=0
+
+for i in range(200):
+    image1 = cropImage(Image.open("query_1/"+fileNames[i]), 24)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 24)
+    h24r = getGridHistogram(rgbR, 24, 8)
+    h24g = getGridHistogram(rgbG, 24, 8)
+    h24b = getGridHistogram(rgbB, 24, 8)
+    h24 = get3dGridHistogram(rgb3D, 24, 16)
+    if(i == compareGridImage(GridHistogram24Red, GridHistogram24Green, GridHistogram24Blue, h24r, h24g, h24b, 24)):
+        q1acc24+=1
+    if(i == compareGrid3dImage(GridHistogram3D24, h24, 24)):
+        q13Dacc24+=1
+        
+    image1 = cropImage(Image.open("query_2/"+fileNames[i]), 24)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 24)
+    h24r = getGridHistogram(rgbR, 24, 8)
+    h24g = getGridHistogram(rgbG, 24, 8)
+    h24b = getGridHistogram(rgbB, 24, 8)
+    h24 = get3dGridHistogram(rgb3D, 24, 16)
+    if(i == compareGridImage(GridHistogram24Red, GridHistogram24Green, GridHistogram24Blue, h24r, h24g, h24b, 24)):
+        q2acc24+=1
+    if(i == compareGrid3dImage(GridHistogram3D24, h24, 24)):
+        q23Dacc24+=1
+        
+    image1 = cropImage(Image.open("query_3/"+fileNames[i]), 24)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 24)
+    h24r = getGridHistogram(rgbR, 24, 8)
+    h24g = getGridHistogram(rgbG, 24, 8)
+    h24b = getGridHistogram(rgbB, 24, 8)
+    h24 = get3dGridHistogram(rgb3D, 24, 16)
+    if(i == compareGridImage(GridHistogram24Red, GridHistogram24Green, GridHistogram24Blue, h24r, h24g, h24b, 24)):
+        q3acc24+=1
+    if(i == compareGrid3dImage(GridHistogram3D24, h24, 24)):
+        q33Dacc24+=1
+q1acc24/=200
+q2acc24/=200
+q3acc24/=200
+q13Dacc24/=200
+q23Dacc24/=200
+q33Dacc24/=200        
+
+print(q1acc24, q2acc24, q3acc24)
+print(q13Dacc24, q23Dacc24, q33Dacc24)
+
 
 ##################################### 16x16 GRID ####################################
 rgbRed16 = []
@@ -529,6 +591,57 @@ rgbGreen16 = np.array(rgbGreen16)
 rgbBlue16 = np.array(rgbBlue16)
 rgb3d16 = np.array(rgb3d16)
 
+GridHistogram16Red = getGridHistograms(rgbRed16, 16, 8)
+GridHistogram16Green = getGridHistograms(rgbGreen16, 16, 8)
+GridHistogram16Blue = getGridHistograms(rgbBlue16, 16, 8)
+GridHistogram3D16 = get3dGridHistograms(rgb3d16, 16, 16)
+
+q1acc16=q2acc16=q3acc16=0
+q13Dacc16=q23Dacc16=q33Dacc16=0
+
+for i in range(200):
+    image1 = cropImage(Image.open("query_1/"+fileNames[i]), 16)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 16)
+    h16r = getGridHistogram(rgbR, 16, 8)
+    h16g = getGridHistogram(rgbG, 16, 8)
+    h16b = getGridHistogram(rgbB, 16, 8)
+    h16 = get3dGridHistogram(rgb3D, 16, 16)
+    if(i == compareGridImage(GridHistogram16Red, GridHistogram16Green, GridHistogram16Blue, h16r, h16g, h16b, 16)):
+        q1acc16+=1
+    if(i == compareGrid3dImage(GridHistogram3D16, h16, 16)):
+        q13Dacc16+=1
+        
+    image1 = cropImage(Image.open("query_2/"+fileNames[i]), 16)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 16)
+    h16r = getGridHistogram(rgbR, 16, 8)
+    h16g = getGridHistogram(rgbG, 16, 8)
+    h16b = getGridHistogram(rgbB, 16, 8)
+    h16 = get3dGridHistogram(rgb3D, 16, 16)
+    if(i == compareGridImage(GridHistogram16Red, GridHistogram16Green, GridHistogram16Blue, h16r, h16g, h16b, 16)):
+        q2acc16+=1
+    if(i == compareGrid3dImage(GridHistogram3D16, h16, 16)):
+        q23Dacc16+=1
+        
+    image1 = cropImage(Image.open("query_3/"+fileNames[i]), 16)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 16)
+    h16r = getGridHistogram(rgbR, 16, 8)
+    h16g = getGridHistogram(rgbG, 16, 8)
+    h16b = getGridHistogram(rgbB, 16, 8)
+    h16 = get3dGridHistogram(rgb3D, 16, 16)
+    if(i == compareGridImage(GridHistogram16Red, GridHistogram16Green, GridHistogram16Blue, h16r, h16g, h16b, 16)):
+        q3acc16+=1
+    if(i == compareGrid3dImage(GridHistogram3D16, h16, 16)):
+        q33Dacc16+=1
+q1acc16/=200
+q2acc16/=200
+q3acc16/=200
+q13Dacc16/=200
+q23Dacc16/=200
+q33Dacc16/=200        
+
+print(q1acc16, q2acc16, q3acc16)
+print(q13Dacc16, q23Dacc16, q33Dacc16)
+
 
 ##################################### 12x12 GRID ####################################
 rgbRed12 = []
@@ -564,8 +677,55 @@ for name in fileNames:
 rgbRed12 = np.array(rgbRed12)
 rgbGreen12 = np.array(rgbGreen12)
 rgbBlue12 = np.array(rgbBlue12)
-rgb3d12 = np.array(rgb3d12)'''
+rgb3d12 = np.array(rgb3d12)
 
+GridHistogram12Red = getGridHistograms(rgbRed12, 12, 8)
+GridHistogram12Green = getGridHistograms(rgbGreen12, 12, 8)
+GridHistogram12Blue = getGridHistograms(rgbBlue12, 12, 8)
+GridHistogram3D12 = get3dGridHistograms(rgb3d12, 12, 16)
 
-t2=time.time()
-print(t2-t1)
+q1acc12=q2acc12=q3acc12=0
+q13Dacc12=q23Dacc12=q33Dacc12=0
+
+for i in range(200):
+    image1 = cropImage(Image.open("query_1/"+fileNames[i]), 12)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 12)
+    h12r = getGridHistogram(rgbR, 12, 8)
+    h12g = getGridHistogram(rgbG, 12, 8)
+    h12b = getGridHistogram(rgbB, 12, 8)
+    h12 = get3dGridHistogram(rgb3D, 12, 16)
+    if(i == compareGridImage(GridHistogram12Red, GridHistogram12Green, GridHistogram12Blue, h12r, h12g, h12b, 12)):
+        q1acc12+=1
+    if(i == compareGrid3dImage(GridHistogram3D12, h12, 12)):
+        q13Dacc12+=1
+        
+    image1 = cropImage(Image.open("query_2/"+fileNames[i]), 12)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 12)
+    h12r = getGridHistogram(rgbR, 12, 8)
+    h12g = getGridHistogram(rgbG, 12, 8)
+    h12b = getGridHistogram(rgbB, 12, 8)
+    h12 = get3dGridHistogram(rgb3D, 12, 16)
+    if(i == compareGridImage(GridHistogram12Red, GridHistogram12Green, GridHistogram12Blue, h12r, h12g, h12b, 12)):
+        q2acc12+=1
+    if(i == compareGrid3dImage(GridHistogram3D12, h12, 12)):
+        q23Dacc12+=1
+        
+    image1 = cropImage(Image.open("query_3/"+fileNames[i]), 12)
+    rgbR, rgbG, rgbB, rgb3D = getGridRgbValues(image1, 12)
+    h12r = getGridHistogram(rgbR, 12, 8)
+    h12g = getGridHistogram(rgbG, 12, 8)
+    h12b = getGridHistogram(rgbB, 12, 8)
+    h12 = get3dGridHistogram(rgb3D, 12, 16)
+    if(i == compareGridImage(GridHistogram12Red, GridHistogram12Green, GridHistogram12Blue, h12r, h12g, h12b, 12)):
+        q3acc12+=1
+    if(i == compareGrid3dImage(GridHistogram3D12, h12, 12)):
+        q33Dacc12+=1
+q1acc12/=200
+q2acc12/=200
+q3acc12/=200
+q13Dacc12/=200
+q23Dacc12/=200
+q33Dacc12/=200        
+
+print(q1acc12, q2acc12, q3acc12)
+print(q13Dacc12, q23Dacc12, q33Dacc12)
