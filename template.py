@@ -40,16 +40,55 @@ def get_loaders(batch_size,device):
     # Note: you may later add test_loader to here.
     return train_loader, val_loader
 
-# ---- ConvNet -----
-class Net(nn.Module):
+# ---- ConvNet1 -----
+class Net1(nn.Module, kernel_size, num_kernels):
     def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 3, 5, padding=2)
+        super(Net1, self).__init__()
+        self.conv1 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))  #(in_channels, out_channels, kernel_size) padding=1
 
     def forward(self, grayscale_image):
         # apply your network's layers in the following lines:      
         x = self.conv1(grayscale_image)
         return x
+
+# ---- ConvNet2 -----
+class Net2(nn.Module, kernel_size, num_kernels):
+    def __init__(self):
+        super(Net2, self).__init__()
+        self.conv1 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))
+        self.relu1 = nn.ReLU(inplace = True)
+        self.conv2 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))       
+
+    def forward(self, grayscale_image):
+        # apply your network's layers in the following lines:      
+        c1 = self.conv1(grayscale_image)
+        r1 = self.relu1(c1)
+        c2 = self.conv2(r1)
+        return c2
+
+# ---- ConvNet4 -----
+class Net4(nn.Module, kernel_size, num_kernels):
+    def __init__(self):
+        super(Net4, self).__init__()
+        self.conv1 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))
+        self.relu1 = nn.ReLU(inplace = True)
+        self.conv2 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))
+        self.relu2 = nn.ReLU(inplace = True)
+        self.conv3 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))  
+        self.relu3 = nn.ReLU(inplace = True)
+        self.conv4 = nn.Conv2d(1, num_kernels, kernel_size, padding=((kernel_size-1)/2))         
+
+    def forward(self, grayscale_image):
+        # apply your network's layers in the following lines:      
+        c1 = self.conv1(grayscale_image)
+        r1 = self.relu1(c1)
+        c2 = self.conv2(r1)
+        r2 = self.relu1(c2)
+        c3 = self.conv2(r2)
+        r3 = self.relu1(c3)
+        c4 = self.conv2(r3)
+        return c4
+
 
 # ---- training code -----
 device = torch.device(DEVICE_ID)
@@ -94,7 +133,3 @@ for epoch in range(max_num_epoch):
         os.makedirs(LOG_DIR)
     torch.save(net.state_dict(), os.path.join(LOG_DIR,'checkpoint.pt'))
     hw3utils.visualize_batch(inputs,preds,targets,os.path.join(LOG_DIR,'example.png'))
-
-print('Finished Training')
-
-
