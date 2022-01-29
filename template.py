@@ -1,11 +1,3 @@
-
-  	Oturumu Kapat
-Mesaj Yaz   Adresler   Klasörler   Seçenekler   Ara   Yardım   	METU
-
-
-Bir yazı eklentisi görüntüleniyor - Mesajı göster
-Bunu dosya olarak indir
-
 # Feel free to change / extend / adapt this source code as needed to complete the
 homework, based on its requirements.
 # This code is given as a starting point.
